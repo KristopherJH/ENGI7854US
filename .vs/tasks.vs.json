@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-Remove_Edge",
+      "appliesTo": "Remove_Edge.py",
+      "type": "command"
+    }
+  ]
+}
