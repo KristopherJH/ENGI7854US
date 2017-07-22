@@ -8,6 +8,13 @@ from PIL import Image
 def stripFrame(frame):
     return frame[33:411, 98:583]
 
+def unstripFrame(newframe,oldframe):
+    regenFrame = oldframe.copy()
+    regenFrame[33:411, 98:583,0] = newframe
+    regenFrame[33:411, 98:583,1] = newframe
+    regenFrame[33:411, 98:583,2] = newframe
+    return regenFrame
+
 def adaptive_histMatch(source, template, neighbourhood = 50):
 
 
@@ -15,12 +22,12 @@ def adaptive_histMatch(source, template, neighbourhood = 50):
     finalSource = np.zeros(area)
     numX = np.ceil(area[0]/neighbourhood).astype(int)
     numY = np.ceil(area[1]/neighbourhood).astype(int)
-    for i in range(area[0]):
-        startX = i 
+    for i in range(area[0]/10):
+        startX = i + 10
         if startX+neighbourhood >= area[0]:
                 startX = area[0] - neighbourhood
-        for j in range(area[1]):
-            startY = j
+        for j in range(area[1]/10):
+            startY = j + 10
             if startY+neighbourhood >= area[1]:
                 startY = area[1] - neighbourhood
             
@@ -90,26 +97,25 @@ def hist_match(source, template):
 
     return np.floor(interp_t_values[bin_idx].reshape(oldshape))
 
-def adaptive_histogram(badImg):
+def adaptive_histogram(badImg, goodImg):
 
       #matchedImg = adaptive_histMatch(badImg,goodImg)
-    goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-    matchedImg = hist_match(badImg,goodImg)
+    
+    matchedImg = hist_match(badImg, goodImg)
     matchedImg = matchedImg.astype(np.uint8)
     # create a CLAHE object (Arguments are optional).
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     return clahe.apply(matchedImg)
 
-def global_histogram(badImg):
-     #matchedImg = adaptive_histMatch(badImg,goodImg)
-    goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
+def global_histogram(badImg, goodImg):
+    #matchedImg = adaptive_histMatch(badImg,goodImg)
     matchedImg = hist_match(badImg,goodImg)
     return matchedImg.astype(np.uint8)
     
 
 
 
-def runVideo(video,funcToUse):
+def runVideo(video,funcToUse,*args, **kwargs):
 
 
     cap = cv2.VideoCapture(video)
@@ -132,10 +138,11 @@ def runVideo(video,funcToUse):
             Transform/edit the frame
             """
 
-            editedImg = funcToUse(badImg)
+            editedImg = funcToUse(badImg, *args,**kwargs)
+            editedImg = unstripFrame(editedImg,frame)
 
             cv2.imshow("Good", editedImg)
-            cv2.imshow("Bad", badImg)
+            cv2.imshow("Bad", frame)
 
         if cv2.waitKey(33) & 0xFF == ord('q'):
             break
@@ -143,8 +150,8 @@ def runVideo(video,funcToUse):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-
-runVideo('Videos/1-A.mp4', global_histogram)
+goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
+runVideo('Videos/4 - A.mp4', global_histogram, goodImg)
 
 
 
