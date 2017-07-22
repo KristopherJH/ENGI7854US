@@ -1,5 +1,6 @@
 import cv2
-# import numpy as np
+import numpy as np
+
 # import matplotlib.pyplot as plt
 # from PIL import Image
 
@@ -31,11 +32,17 @@ cap = cv2.VideoCapture('Videos/1-A.mp4')
 
 ret = True
 
+x = np.array(range(98, 583))
+y = np.array(range(33, 411))
+
 while cap.isOpened():
     ret, frame = cap.read()
 
     if ret:
-        cv2.imshow('frame', frame)
+        gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        desFrame = gframe[y, :]
+        desFrame = desFrame[:, x]
+        cv2.imshow('frame', desFrame)
 
     if cv2.waitKey(33) & 0xFF == ord('q'):
         break
