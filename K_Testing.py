@@ -28,7 +28,7 @@ plt.yticks([])
 plt.show()
 """
 
-cap = cv2.VideoCapture('Videos/1-A.mp4')
+cap = cv2.VideoCapture('Videos/2 - A.mp4')
 
 ret = True
 
@@ -43,10 +43,17 @@ while cap.isOpened():
         Transform/edit the frame
         """
 
-        regenFrame = gframe
-        regenFrame[33:411, 98:583] = desFrame
+        table = np.array([((i / 255.0) ** 0.45) * 255
 
-        cv2.imshow('frame', regenFrame)
+        for i in np.arange(0, 256)]).astype('uint8')
+
+        showFrame = cv2.LUT(desFrame, table)
+
+        regenFrame = np.copy(gframe)
+        regenFrame[33:411, 98:583] = showFrame
+
+        cv2.imshow('good', regenFrame)
+        cv2.imshow('bad', gframe)
 
     if cv2.waitKey(33) & 0xFF == ord('q'):
         break
