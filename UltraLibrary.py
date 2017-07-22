@@ -150,8 +150,9 @@ def runVideo(video,funcToUse,*args, **kwargs):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-runVideo('Videos/4 - A.mp4', global_histogram, goodImg)
+if __name__ == "__main__":
+    goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
+    runVideo('Videos/4 - A.mp4', global_histogram, goodImg)
 
 
 
