@@ -32,17 +32,21 @@ cap = cv2.VideoCapture('Videos/1-A.mp4')
 
 ret = True
 
-x = np.array(range(98, 583))
-y = np.array(range(33, 411))
-
 while cap.isOpened():
     ret, frame = cap.read()
 
     if ret:
         gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        desFrame = gframe[y, :]
-        desFrame = desFrame[:, x]
-        cv2.imshow('frame', desFrame)
+        desFrame = gframe[33:411, 98:583]
+
+        """
+        Transform/edit the frame
+        """
+
+        regenFrame = gframe
+        regenFrame[33:411, 98:583] = desFrame
+
+        cv2.imshow('frame', regenFrame)
 
     if cv2.waitKey(33) & 0xFF == ord('q'):
         break
