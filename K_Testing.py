@@ -32,7 +32,7 @@ cap = cv2.VideoCapture('Videos/2 - A.mp4')
 
 ret = True
 
-while cap.isOpened():
+while ret:
     ret, frame = cap.read()
 
     if ret:

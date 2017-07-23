@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import UltraLibrary as UL
 
 def avgVidIntensity(video):
 
@@ -14,7 +15,8 @@ def avgVidIntensity(video):
 
         if ret:
             gframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frameMean[i] = np.mean(gframe)
+            sframe = UL.stripFrame(gframe)
+            frameMean[i] = np.mean(sframe)
             i += 1
 
     cap.release()
@@ -27,14 +29,14 @@ def avgVidIntensity(video):
 
 V1A = 'Videos/1-A.mp4'
 V1B = 'Videos/1-B.mp4'
-V2A = 'Videos/2 - A.mp4'
-V2B = 'Videos/2 - B.mp4'
-V3A = 'Videos/3 - A.mp4'
-V3B = 'Videos/3 - B.mp4'
-V4A = 'Videos/4 - A.mp4'
-V4B = 'Videos/4 - B.mp4'
-V5A = 'Videos/5 - A.mp4'
-V5B = 'Videos/5 - B.mp4'
+V2A = 'Videos/2-A.mp4'
+V2B = 'Videos/2-B.mp4'
+V3A = 'Videos/3-A.mp4'
+V3B = 'Videos/3-B.mp4'
+V4A = 'Videos/4-A.mp4'
+V4B = 'Videos/4-B.mp4'
+V5A = 'Videos/5-A.mp4'
+V5B = 'Videos/5-B.mp4'
 
 
 f1AM, f1AMin, f1AMax = avgVidIntensity(V1A)
