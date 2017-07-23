@@ -97,6 +97,34 @@ def hist_match(source, template):
 
     return np.floor(interp_t_values[bin_idx].reshape(oldshape))
 
+def cdf(source):
+    ldshape = source.shape
+    source = source.ravel()
+    
+
+    s_values, bin_idx, s_counts = np.unique(source, return_inverse=True,
+                                            return_counts=True)
+
+    s_quantiles = np.cumsum(s_counts).astype(np.float64)
+    s_quantiles /= s_quantiles[-1]
+
+    return s_quantiles, bin_idx
+
+
+def filtered_match(img, filteredImg, goodImg):
+    cdf_desired, bin = cdf(filteredImg)
+    #cdf_dummy, bin = cdf(img)
+    t_values, t_counts = np.unique(goodImg, return_counts=True)
+
+    t_quantiles = np.cumsum(t_counts).astype(np.float64)
+    t_quantiles /= t_quantiles[-1]
+
+    interp_t_values = np.interp(cdf_desired,t_quantiles,t_values)
+
+    return np.floor(interp_t_values[bin].reshape(img.shape))
+
+
+
 def adaptive_histogram(badImg, goodImg):
 
       #matchedImg = adaptive_histMatch(badImg,goodImg)
@@ -152,7 +180,7 @@ def runVideo(video,funcToUse,*args, **kwargs):
 
 if __name__ == "__main__":
     goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-    runVideo('Videos/4 - A.mp4', global_histogram, goodImg)
+    runVideo('Videos/4-A.mp4', global_histogram, goodImg)
 
 
 
