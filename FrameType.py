@@ -1,7 +1,7 @@
 import numpy as np
 
-def f_type(frame):
 
+def f_type(frame):
     frameMean = np.mean(frame)
 
     if 5 <= frameMean <= 5.99:
