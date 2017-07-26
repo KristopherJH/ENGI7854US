@@ -12,10 +12,11 @@ def hist_despeckle(img,goodImg):
 
 
 
-def despeckle_thresh(img):
+def despeckle_thresh(img, countarray,index):
     dsimg, homog = quickieHomo(img)
-    homog2 = homog[80:200,250:400]
+   # homog2 = homog[80:200,250:400]
 
+    homog2 = homog
     thresholding(dsimg,homog2)
    
     edges = cv2.Canny(homog2, 50, 80)
@@ -24,9 +25,11 @@ def despeckle_thresh(img):
 
     kernel = np.ones((5,5),np.uint8)
     opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 2)
-    print(np.sum(edges)/255)
-    cv2.imshow('dialtion', opening)
 
+    cv2.imshow('dialtion', opening)
+   
+    countarray[index[0]] = np.sum(opening)/255
+    index[0] = index[0] + 1
 
     return dsimg
 
@@ -44,20 +47,20 @@ def thresholding(img,other):
     # noise removal
     kernel = np.ones((3,3),np.uint8)
     opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 5)
-    closing = cv2.morphologyEx(thresh,cv2.MORPH_CLOSE,kernel, iterations = 5)
+    #closing = cv2.morphologyEx(thresh,cv2.MORPH_CLOSE,kernel, iterations = 5)
     cv2.imshow('opening',opening)
     # sure background area
-    sure_bg = cv2.dilate(opening,kernel,iterations=3)
+    #sure_bg = cv2.dilate(opening,kernel,iterations=3)
     # Finding sure foreground area
-    dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
-    ret, sure_fg = cv2.threshold(dist_transform,0.7*dist_transform.max(),255,0)
+    #dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
+    #ret, sure_fg = cv2.threshold(dist_transform,0.7*dist_transform.max(),255,0)
     # Finding unknown region
-    sure_fg = np.uint8(sure_fg)
-    unknown = cv2.subtract(sure_bg,sure_fg)
-    cv2.imshow('bg',sure_bg)
+    #sure_fg = np.uint8(sure_fg)
+    #unknown = cv2.subtract(sure_bg,sure_fg)
+    #cv2.imshow('bg',sure_bg)
     #cv2.imshow('fg',sure_fg)
-    cv2.imshow('unknown',unknown)
-    cv2.imshow('dist',dist_transform)
+   # cv2.imshow('unknown',unknown)
+    #cv2.imshow('dist',dist_transform)
 
 
 
@@ -77,7 +80,7 @@ def quickieHomo(img):
 
      median = cv2.medianBlur(img,wSize)
      gaussian = cv2.GaussianBlur(img,(wSize,wSize),sigmaX=1)
-
+    
      mean_mean = np.mean(mean) 
      mean_dev = np.mean(dev)
 
@@ -94,12 +97,13 @@ def quickieHomo(img):
      hMat = np.logical_or(hMat,zeromean)
 
      gaussians = np.multiply(hMat,gaussian)
-     medians = np.multiply(np.logical_not(hMat),median)
+     medians = np.multiply(np.logical_not(hMat),median) 
      
      newimg = gaussians+medians
 
-     cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
 
+     cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
+   
 
      return newimg.astype(np.uint8), hMat.astype(np.uint8)*255
 
@@ -164,7 +168,7 @@ def despeckle(img):
     #plt.show()
 
 
-    cv2.imshow('homogeny', hMat)
+    cv2.imshow('homogeny', hMat)   
 
 
     #gimg = cv2.GaussianBlur(img, (7,7),sigmaX = 1);
@@ -178,8 +182,25 @@ def despeckle(img):
 
 if __name__ == "__main__":
     goodImg = cv2.imread('GoodImages\\3-A.png')
-    video = 'Videos\\2-A.mp4'
-    ul.runVideo(video, despeckle_thresh)
+    vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
+        'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
+        'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
+
+   # vids =['Videos/Varying.mp4']
+    for video in vids:
+        cap = cv2.VideoCapture(video)
+
+        length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        cap.release()
+
+        counts = np.zeros(length)
+        index = [0]
+   
+        ul.runVideo(video, despeckle_thresh, counts,index)
+
+        plt.plot(counts)
+        plt.title(video)
+        plt.show()
 
 
 

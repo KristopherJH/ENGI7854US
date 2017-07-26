@@ -171,8 +171,10 @@ def runVideo(video,funcToUse,*args, **kwargs):
 
             cv2.imshow("Good", editedImg)
             cv2.imshow("Bad", frame)
+        else:
+            break
 
-        if cv2.waitKey(33) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cv2.waitKey(0)
@@ -180,7 +182,7 @@ def runVideo(video,funcToUse,*args, **kwargs):
 
 if __name__ == "__main__":
     goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-    runVideo('Videos/4-A.mp4', global_histogram, goodImg)
+    runVideo('Videos/Varying.mp4', global_histogram, goodImg)
 
 
 
