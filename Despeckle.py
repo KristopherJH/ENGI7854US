@@ -4,32 +4,78 @@ import numpy as np
 
 import UltraLibrary as ul
 
-
+from FrameType import f_type
 
 def hist_despeckle(img,goodImg):
     dsimg, homog = quickieHomo(img)
     return ul.filtered_match(img,dsimg,goodImg)
 
+def detection(im):
+   
+    detector = cv2.SimpleBlobDetector_create()
+    
+    # Detect blobs.
+    keypoints = detector.detect(im)
+ 
+    # Draw detected blobs as red circles.
+    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+    im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+ 
+    # Show keypoints
+    cv2.imshow("Keypoints", im_with_keypoints)
 
 
-def despeckle_thresh(img, countarray,index):
+def despeckle_thresh(img, countarray,diffarray,index, systracker):
     dsimg, homog = quickieHomo(img)
-   # homog2 = homog[80:200,250:400]
-
-    homog2 = homog
+    homog2 = homog[80:200,200:400]
+    detection(homog)
     thresholding(dsimg,homog2)
    
-    edges = cv2.Canny(homog2, 50, 80)
-    cv2.imshow('edges', edges)
- 
+    kernel = np.ones((3,3),np.uint8)
+    opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 1)
 
-    kernel = np.ones((5,5),np.uint8)
-    opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 2)
+    edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
+  
+    cv2.imshow('edges', edges)
 
     cv2.imshow('dialtion', opening)
    
-    countarray[index[0]] = np.sum(opening)/255
+    countarray[index[0]] = np.sum(edges)/255
+    if index[0] > 10:
+        diffarray[index[0]] = np.mean(countarray[index[0]-10:index[0]])
+    else:
+        diffarray[index[0]] = np.mean(countarray[:index[0]])
+
+   
+
+    systolic = countarray[index[0]] < diffarray[index[0]] 
+    if systolic != systracker[0]:
+        if index[0] - systracker[1] <= 7:
+            systolic = not systolic
+        else:
+            systracker[0] = systolic
+            systracker[1] = index[0]
+
+
+
+    print(systolic, countarray[index[0]], diffarray[index[0]])
+    image =np.zeros((120,200,3), np.uint8)
+    if systolic:
+          image[:,:,1] = 255
+        
+    else:
+          image[:,:,2] = 255
+
     index[0] = index[0] + 1
+
+    cv2.imshow('systolic',image)
+
+
+    #plt.cla()
+    #plt.plot(counts[:index[0]-1])
+    #plt.title(video)
+    #plt.pause(0.001)
+        
 
     return dsimg
 
@@ -61,7 +107,7 @@ def thresholding(img,other):
     #cv2.imshow('fg',sure_fg)
    # cv2.imshow('unknown',unknown)
     #cv2.imshow('dist',dist_transform)
-
+    return thresh
 
 
 
@@ -70,10 +116,12 @@ def quickieHomo(img):
      hScaler = 2
 
     
-     wSize = 11
+     wSize = 7
 
      hMat = np.zeros(img.shape)
-     mean = cv2.blur(img.astype(np.float64),(wSize,wSize)) 
+     mean = cv2.blur(img.astype(np.float64),(wSize,wSize))
+    
+     cv2.imshow('mean', mean)
      moment2 = cv2.blur(np.multiply(img,img).astype(np.float64), (wSize,wSize))
 
      dev = moment2-np.multiply(mean,mean)
@@ -92,8 +140,11 @@ def quickieHomo(img):
 
      hMat = np.less_equal(hVal,hthresh)
 
-     zeromean = np.equal(mean,0)
+     zeromean = np.less(mean,3)
      
+     #hMat = np.multiply(hMat,np.logical_not(zeromean))
+     type = f_type(img)
+    
      hMat = np.logical_or(hMat,zeromean)
 
      gaussians = np.multiply(hMat,gaussian)
@@ -104,7 +155,7 @@ def quickieHomo(img):
 
      cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
    
-
+        
      return newimg.astype(np.uint8), hMat.astype(np.uint8)*255
 
 
@@ -185,8 +236,8 @@ if __name__ == "__main__":
     vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
-
-   # vids =['Videos/Varying.mp4']
+    
+    #vids =['Videos/Varying.mp4']
     for video in vids:
         cap = cv2.VideoCapture(video)
 
@@ -194,11 +245,27 @@ if __name__ == "__main__":
         cap.release()
 
         counts = np.zeros(length)
+        diffs = np.zeros(length)
         index = [0]
-   
-        ul.runVideo(video, despeckle_thresh, counts,index)
+        #plt.ion()
+        systracker = np.zeros(2)
+        ul.runVideo(video, despeckle_thresh, counts,diffs,index, systracker)
 
         plt.plot(counts)
+        mean = diffs
+        dev = np.var(counts)**0.5
+        hthresh = mean+dev/2
+        lthresh = mean-dev/2
+
+
+        plt.plot(mean)
+
+        systolic = np.less(counts,mean).astype(np.uint8)
+        systolic = systolic*(counts.max()-counts.min()) + counts.min()
+        plt.plot(systolic)
+        #plt.plot(hthresh)
+        #plt.plot(lthresh)
+        #plt.plot(diffs)
         plt.title(video)
         plt.show()
 
