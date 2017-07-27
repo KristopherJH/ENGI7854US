@@ -238,11 +238,11 @@ def despeckle(img):
 
 if __name__ == "__main__":
     goodImg = cv2.imread('GoodImages\\3-A.png')
-    vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
+    #vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
     
-    vids =['Videos/Varying.mp4']
+    #vids =['Videos/Varying.mp4']
     for video in vids:
         cap = cv2.VideoCapture(video)
 
