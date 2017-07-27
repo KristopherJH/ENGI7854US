@@ -67,7 +67,8 @@ while ret:
         type = FT.f_type(sframe)
 
         if type == '1':
-            heartState = DS.hist_first(sframe)
+            heartCheck = np.copy(sframe)
+            heartState = DS.hist_first(heartCheck)
             if heartState:
                 fImproved = UL.global_histogram(sframe, good_i_sys)
             else:
@@ -77,7 +78,9 @@ while ret:
             regenFrame[324:359, 93:598] = warning_im
             delay = frame_delay(start_t)
         elif type == '2' or type == '4' or type == '5':
-            heartState = DS.hist_first(sframe)
+            #heartCheck = np.copy(sframe)
+            #heartState = DS.hist_first(heartCheck)
+            heartState = True
             if heartState:
                 fImproved = UL.global_histogram(sframe, good_i_sys)
             else:
