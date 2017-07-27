@@ -27,6 +27,13 @@ def frame_delay(start):
     else:
         return 33
 
+
+def outputFrame(original, improved, spacer):
+    temp = np.append(original, improved, axis=1)
+    return np.append(temp, spacer, axis=1).astype(np.uint8)
+
+frameSplitter = np.zeros((480, 100))
+
 warning_img = cv2.imread('Images/Warning.png')
 warning_im = cv2.cvtColor(warning_img, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
@@ -35,10 +42,10 @@ good_im = UL.stripFrame(good_img)
 good_i = cv2.cvtColor(good_im, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
 empty = np.zeros((480, 640))
-cv2.imshow('After', np.copy(empty))
-cv2.imshow('Before', np.copy(empty))
+outputTemplate = outputFrame(empty, frameSplitter, empty)
+cv2.imshow('Original vs. Corrected', outputTemplate)
 
-cap = cv2.VideoCapture(vids[3])  # Open specified video file
+cap = cv2.VideoCapture(vids[1])  # Open specified video file
 
 ret = True  # Initialize ret to be True, ret keeps track if there is 1+ frames left in vid
 
@@ -62,13 +69,12 @@ while ret:
             delay = frame_delay(start_t)
             regenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
-            regenFrame[244:279, 68:573] = warning_im
+            regenFrame[324:359, 93:598] = warning_im
         elif type == '2':
             fImproved = UL.global_histogram(sframe, good_i)
             delay = frame_delay(start_t)
             regenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
-            regenFrame[244:279, 68:573] = warning_im
         elif type == '3':
             fImproved = sframe
             delay = frame_delay(start_t)
@@ -85,8 +91,8 @@ while ret:
             pregenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
 
-        cv2.imshow('After', regenFrame)
-        cv2.imshow('Before', gframe)
+        display = outputFrame(gframe, frameSplitter, regenFrame)
+        cv2.imshow('Original vs. Corrected', display)
 
         if cv2.waitKey(delay) & 0xFF == ord('q'):
             break
