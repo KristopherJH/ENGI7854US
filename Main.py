@@ -15,12 +15,9 @@ def frame_delay(start):
     now = 0
     timer = datetime.now()
     now = (timer.day * 24 * 60 * 60 + timer.second) * 1000 + timer.microsecond/1000
-    print(start)
-    print(now)
     diff = now - start
     print(diff)
     next_frame = 33 - diff
-    print(next_frame)
     if next_frame <= 1:
         return 1
     elif 1 < next_frame < 33:
@@ -68,7 +65,6 @@ while ret:
         sframe = UL.stripFrame(gframe)  # Call stripFrame to remove outer info from US image
 
         type = FT.f_type(sframe)
-        print(type)
 
         if type == '1':
             heartState = DS.hist_first(sframe)
