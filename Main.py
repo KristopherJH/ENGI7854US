@@ -38,11 +38,11 @@ frameSplitter = np.zeros((480, 100))
 warning_img = cv2.imread('Images/Warning.png')
 warning_im = cv2.cvtColor(warning_img, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
-good_img_sys = cv2.imread('Images/3-A_frame_39.png')
+good_img_sys = cv2.imread('Reference/Systolic.png')
 good_im_sys = UL.stripFrame(good_img_sys)
 good_i_sys = cv2.cvtColor(good_im_sys, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
-good_img_dia = cv2.imread('Images/3-A_frame_39.png')
+good_img_dia = cv2.imread('Reference/Diastolic.png')
 good_im_dia = UL.stripFrame(good_img_dia)
 good_i_dia = cv2.cvtColor(good_im_dia, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
@@ -51,7 +51,7 @@ empty = np.zeros((480, 640))
 outputTemplate = outputFrame(empty, frameSplitter, empty)
 cv2.imshow('Original vs. Corrected', outputTemplate)
 
-cap = cv2.VideoCapture(vids[1])  # Open specified video file
+cap = cv2.VideoCapture(vids[10])  # Open specified video file
 
 ret = True  # Initialize ret to be True, ret keeps track if there is 1+ frames left in vid
 
@@ -80,26 +80,20 @@ while ret:
             regenFrame[33:411, 98:583] = fImproved
             regenFrame[324:359, 93:598] = warning_im
             delay = frame_delay(start_t)
-        elif type == '2':
-            fImproved = UL.global_histogram(sframe, good_i)
-            delay = frame_delay(start_t)
+        elif type == '2' or type == '4' or type == '5':
+            heartState = DS.hist_first(sframe)
+            if heartState:
+                fImproved = UL.global_histogram(sframe, good_i_sys)
+            else:
+                fImproved = UL.global_histogram(sframe, good_i_dia)
             regenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
+            delay = frame_delay(start_t)
         elif type == '3':
             fImproved = sframe
-            delay = frame_delay(start_t)
             regenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
-        elif type == '4':
-            fImproved = UL.global_histogram(sframe, good_i)
             delay = frame_delay(start_t)
-            regenFrame = np.copy(gframe)
-            regenFrame[33:411, 98:583] = fImproved
-        elif type == '5':
-            fImproved = UL.global_histogram(sframe, good_i)
-            delay = frame_delay(start_t)
-            pregenFrame = np.copy(gframe)
-            regenFrame[33:411, 98:583] = fImproved
 
         display = outputFrame(gframe, frameSplitter, regenFrame)
         cv2.imshow('Original vs. Corrected', display)
