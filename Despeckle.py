@@ -24,6 +24,11 @@ def detection(im):
     # Show keypoints
     cv2.imshow("Keypoints", im_with_keypoints)
 
+def hist_first(img, *args, **kwargs):
+    goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
+    histCorrected = ul.global_histogram(img,goodImg)
+    despeckle_thresh(histCorrected, *args,**kwargs)
+    return histCorrected
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
     dsimg, homog = quickieHomo(img)
@@ -41,8 +46,8 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
     cv2.imshow('dialtion', opening)
    
     countarray[index[0]] = np.sum(edges)/255
-    if index[0] > 10:
-        diffarray[index[0]] = np.mean(countarray[index[0]-10:index[0]])
+    if index[0] > 5:
+        diffarray[index[0]] = np.mean(countarray[index[0]-5:index[0]])
     else:
         diffarray[index[0]] = np.mean(countarray[:index[0]])
 
@@ -50,7 +55,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     systolic = countarray[index[0]] < diffarray[index[0]] 
     if systolic != systracker[0]:
-        if index[0] - systracker[1] <= 7:
+        if index[0] - systracker[1] <= 10:
             systolic = not systolic
         else:
             systracker[0] = systolic
@@ -237,7 +242,7 @@ if __name__ == "__main__":
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
     
-    #vids =['Videos/Varying.mp4']
+    vids =['Videos/Varying.mp4']
     for video in vids:
         cap = cv2.VideoCapture(video)
 
@@ -249,7 +254,7 @@ if __name__ == "__main__":
         index = [0]
         #plt.ion()
         systracker = np.zeros(2)
-        ul.runVideo(video, despeckle_thresh, counts,diffs,index, systracker)
+        ul.runVideo(video, hist_first, counts,diffs,index, systracker)
 
         plt.plot(counts)
         mean = diffs
