@@ -137,8 +137,8 @@ def adaptive_histogram(badImg, goodImg):
 
 def global_histogram(badImg, goodImg):
     #matchedImg = adaptive_histMatch(badImg,goodImg)
-    matchedImg = hist_match(badImg,goodImg)
-    return matchedImg.astype(np.uint8)
+    badImg = hist_match(badImg,goodImg)
+    return badImg.astype(np.uint8)
     
 
 
@@ -182,7 +182,7 @@ def runVideo(video,funcToUse,*args, **kwargs):
 
 if __name__ == "__main__":
     goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-    runVideo('Videos/Varying.mp4', global_histogram, goodImg)
+    runVideo('Videos/Varying.mp4', adaptive_histogram, goodImg)
 
 
 

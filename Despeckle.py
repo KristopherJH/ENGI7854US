@@ -34,9 +34,9 @@ def hist_first(original, *args, **kwargs):
     index = [0]
     #plt.ion()
     systracker = np.zeros(2)
-    histCorrected = ul.global_histogram(img,goodImg)
+    img = ul.global_histogram(img,goodImg)
  
-    newimg, systolic = despeckle_thresh(histCorrected, counts,diffs,index,systracker)
+    newimg, systolic = despeckle_thresh(img, counts,diffs,index,systracker)
     return systolic
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
@@ -167,7 +167,7 @@ def quickHomog(img):
      newimg = gaussians+medians
 
 
-     cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
+     #cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
    
         
      return newimg.astype(np.uint8), hMat.astype(np.uint8)*255
