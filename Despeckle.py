@@ -24,11 +24,11 @@ def detection(im):
     # Show keypoints
     cv2.imshow("Keypoints", im_with_keypoints)
 
-def hist_first(img, *args, **kwargs):
+def hist_first(original, *args, **kwargs):
     goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
     length = 450
   
-
+    img = original.copy()
     counts = np.zeros(length)
     diffs = np.zeros(length)
     index = [0]
@@ -50,7 +50,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
   
-    cv2.imshow('edges', edges)
+    #cv2.imshow('edges', edges)
 
     #cv2.imshow('dialtion', opening)
    
@@ -72,7 +72,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
 
 
-    print(systolic, countarray[index[0]], diffarray[index[0]])
+    #print(systolic, countarray[index[0]], diffarray[index[0]])
     image =np.zeros((120,200,3), np.uint8)
     if systolic:
           image[:,:,1] = 255
@@ -82,7 +82,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     index[0] = index[0] + 1
 
-    cv2.imshow('systolic',image)
+    #cv2.imshow('systolic',image)
 
 
     #plt.cla()
