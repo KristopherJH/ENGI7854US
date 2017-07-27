@@ -26,9 +26,17 @@ def detection(im):
 
 def hist_first(img, *args, **kwargs):
     goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
+    length = 450
+  
+
+    counts = np.zeros(length)
+    diffs = np.zeros(length)
+    index = [0]
+    #plt.ion()
+    systracker = np.zeros(2)
     histCorrected = ul.global_histogram(img,goodImg)
  
-    newimg, systolic = despeckle_thresh(histCorrected, *args,**kwargs)
+    newimg, systolic = despeckle_thresh(histCorrected, counts,diffs,index,systracker)
     return systolic
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
