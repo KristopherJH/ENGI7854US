@@ -27,23 +27,24 @@ def detection(im):
 def hist_first(img, *args, **kwargs):
     goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
     histCorrected = ul.global_histogram(img,goodImg)
-    despeckle_thresh(histCorrected, *args,**kwargs)
-    return histCorrected
+ 
+    newimg, systolic = despeckle_thresh(histCorrected, *args,**kwargs)
+    return systolic
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
-    dsimg, homog = quickieHomo(img)
+    dsimg, homog = quickHomog(img)
     homog2 = homog[80:200,200:400]
-    detection(homog)
-    thresholding(dsimg,homog2)
+    #detection(homog)
+    #thresholding(dsimg,homog2)
    
     kernel = np.ones((3,3),np.uint8)
-    opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 1)
+    #opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 1)
 
     edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
   
     cv2.imshow('edges', edges)
 
-    cv2.imshow('dialtion', opening)
+    #cv2.imshow('dialtion', opening)
    
     countarray[index[0]] = np.sum(edges)/255
     if index[0] > 5:
@@ -82,7 +83,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
     #plt.pause(0.001)
         
 
-    return dsimg
+    return dsimg, systolic
 
 
 def thresholding(img,other):
@@ -116,7 +117,7 @@ def thresholding(img,other):
 
 
 
-def quickieHomo(img):
+def quickHomog(img):
 
      hScaler = 2
 
@@ -126,7 +127,7 @@ def quickieHomo(img):
      hMat = np.zeros(img.shape)
      mean = cv2.blur(img.astype(np.float64),(wSize,wSize))
     
-     cv2.imshow('mean', mean)
+     #cv2.imshow('mean', mean)
      moment2 = cv2.blur(np.multiply(img,img).astype(np.float64), (wSize,wSize))
 
      dev = moment2-np.multiply(mean,mean)
@@ -148,7 +149,7 @@ def quickieHomo(img):
      zeromean = np.less(mean,3)
      
      #hMat = np.multiply(hMat,np.logical_not(zeromean))
-     type = f_type(img)
+
     
      hMat = np.logical_or(hMat,zeromean)
 
@@ -238,11 +239,11 @@ def despeckle(img):
 
 if __name__ == "__main__":
     goodImg = cv2.imread('GoodImages\\3-A.png')
-    #vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
+    vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
     
-    #vids =['Videos/Varying.mp4']
+    vids =['Videos/Varying.mp4']
     for video in vids:
         cap = cv2.VideoCapture(video)
 
