@@ -28,7 +28,7 @@ def hist_first(original, *args, **kwargs):
     goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
     length = 450
   
-    img = original.copy()
+    img = np.copy(original)
     counts = np.zeros(length)
     diffs = np.zeros(length)
     index = [0]
@@ -45,7 +45,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
     #detection(homog)
     #thresholding(dsimg,homog2)
    
-    kernel = np.ones((3,3),np.uint8)
+    #kernel = np.ones((3,3),np.uint8)
     #opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 1)
 
     edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
