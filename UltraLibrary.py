@@ -95,7 +95,7 @@ def hist_match(source, template):
     #interp_t_values[0:20] = s_values[0:20]
     #interp_t_values[20:] = interp_t_values_2
 
-    return np.floor(interp_t_values[bin_idx].reshape(oldshape))
+    return interp_t_values[bin_idx].reshape(oldshape)
 
 def cdf(source):
     ldshape = source.shape
@@ -138,8 +138,7 @@ def adaptive_histogram(badImg, goodImg):
 def global_histogram(badImg, goodImg):
     #matchedImg = adaptive_histMatch(badImg,goodImg)
     badImg = hist_match(badImg,goodImg)
-    return badImg.astype(np.uint8)
-    
+    return badImg
 
 
 
@@ -181,8 +180,9 @@ def runVideo(video,funcToUse,*args, **kwargs):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    goodImg = stripFrame(cv2.imread('GoodImages\\3-A.png',0))
-    runVideo('Videos/Varying.mp4', adaptive_histogram, goodImg)
+    goodImg = stripFrame(cv2.imread('Images\\3-A_frame_39.png',0))
+    cv2.waitKey(0)
+    runVideo('Videos/3-A.mp4', global_histogram, goodImg)
 
 
 

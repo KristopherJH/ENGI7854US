@@ -24,23 +24,17 @@ def detection(im):
     # Show keypoints
     cv2.imshow("Keypoints", im_with_keypoints)
 
-def hist_first(original, *args, **kwargs):
-    goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
+def hist_first(original, goodImg,*args, **kwargs):
+    
     length = 450
-  
-    img = np.copy(original)
-    counts = np.zeros(length)
-    diffs = np.zeros(length)
-    index = [0]
-    #plt.ion()
-    systracker = np.zeros(2)
-    img = ul.global_histogram(img,goodImg)
+
+    img = ul.global_histogram(original,goodImg)
  
-    newimg, systolic = despeckle_thresh(img, counts,diffs,index,systracker)
-    return systolic
+    systolic = despeckle_thresh(img.astype(np.uint8), *args, **kwargs)
+    return False
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
-    dsimg, homog = quickHomog(img)
+    homog = quickHomog(img)
     homog2 = homog[80:200,200:400]
     #detection(homog)
     #thresholding(dsimg,homog2)
@@ -82,7 +76,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     index[0] = index[0] + 1
 
-    #cv2.imshow('systolic',image)
+    cv2.imshow('systolic',image)
 
 
     #plt.cla()
@@ -91,7 +85,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
     #plt.pause(0.001)
         
 
-    return dsimg, systolic
+    return systolic
 
 
 def thresholding(img,other):
@@ -170,7 +164,7 @@ def quickHomog(img):
      #cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
    
         
-     return newimg.astype(np.uint8), hMat.astype(np.uint8)*255
+     return hMat.astype(np.uint8)*255
 
 
 
@@ -250,6 +244,7 @@ if __name__ == "__main__":
     vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
+    goodImg = cv2.imread('GoodImages\\3-A.PNG',0)
     
     vids =['Videos/Varying.mp4']
     for video in vids:
@@ -263,7 +258,7 @@ if __name__ == "__main__":
         index = [0]
         #plt.ion()
         systracker = np.zeros(2)
-        ul.runVideo(video, hist_first, counts,diffs,index, systracker)
+        ul.runVideo(video, hist_first, goodImg, counts,diffs,index, systracker)
 
         plt.plot(counts)
         mean = diffs
