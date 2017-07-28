@@ -32,14 +32,24 @@ def outputFrame(original, improved, spacer):
 
 frameSplitter = np.zeros((480, 100))
 
+
+length = 450
+  
+
+counts = np.zeros(length)
+diffs = np.zeros(length)
+index = [0]
+
+systracker = np.zeros(2)
+
 warning_img = cv2.imread('Images/Warning.png')
 warning_im = cv2.cvtColor(warning_img, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
-good_img_sys = cv2.imread('Reference/Systolic.png')
+good_img_sys = cv2.imread('Reference/Systolic_cv.png')
 good_im_sys = UL.stripFrame(good_img_sys)
 good_i_sys = cv2.cvtColor(good_im_sys, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
-good_img_dia = cv2.imread('Reference/Diastolic.png')
+good_img_dia = cv2.imread('Reference/Diastolic_cv.png')
 good_im_dia = UL.stripFrame(good_img_dia)
 good_i_dia = cv2.cvtColor(good_im_dia, cv2.COLOR_BGR2GRAY)  # Convert current frame to grayscale
 
@@ -68,7 +78,7 @@ while ret:
 
         if type == '1':
             heartCheck = np.copy(sframe)
-            heartState = DS.hist_first(heartCheck)
+            heartState = DS.hist_first(heartCheck,good_i_dia,counts,diffs,index, systracker)
             if heartState:
                 fImproved = UL.global_histogram(sframe, good_i_sys)
             else:
@@ -79,7 +89,7 @@ while ret:
             delay = frame_delay(start_t)
         elif type == '2' or type == '4' or type == '5':
             heartCheck = np.copy(sframe)
-            heartState = DS.hist_first(heartCheck)
+            heartState = DS.hist_first(heartCheck,good_i_dia,counts,diffs,index, systracker)
             #heartState = True
             if heartState:
                 fImproved = UL.global_histogram(sframe, good_i_sys)

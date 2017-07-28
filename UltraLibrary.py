@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
+def averages(img, meanA,index):
+    meanA[index[0]] = np.mean(img)
+
+
 def stripFrame(frame):
     return frame[33:411, 98:583]
 

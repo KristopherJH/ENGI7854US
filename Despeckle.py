@@ -26,12 +26,11 @@ def detection(im):
 
 def hist_first(original, goodImg,*args, **kwargs):
     
-    length = 450
-
     img = ul.global_histogram(original,goodImg)
  
     systolic = despeckle_thresh(img.astype(np.uint8), *args, **kwargs)
-    return False
+
+    return systolic
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
     homog = quickHomog(img)
@@ -134,8 +133,8 @@ def quickHomog(img):
 
      dev = moment2-np.multiply(mean,mean)
 
-     median = cv2.medianBlur(img,wSize)
-     gaussian = cv2.GaussianBlur(img,(wSize,wSize),sigmaX=1)
+     #median = cv2.medianBlur(img,wSize)
+     #gaussian = cv2.GaussianBlur(img,(wSize,wSize),sigmaX=1)
     
      mean_mean = np.mean(mean) 
      mean_dev = np.mean(dev)
@@ -155,10 +154,10 @@ def quickHomog(img):
     
      hMat = np.logical_or(hMat,zeromean)
 
-     gaussians = np.multiply(hMat,gaussian)
-     medians = np.multiply(np.logical_not(hMat),median) 
+     #gaussians = np.multiply(hMat,gaussian)
+     #medians = np.multiply(np.logical_not(hMat),median) 
      
-     newimg = gaussians+medians
+     #newimg = gaussians+medians
 
 
      #cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
