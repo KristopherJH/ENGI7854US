@@ -7,7 +7,8 @@ from PIL import Image
 
 def averages(img, meanA,index):
     meanA[index[0]] = np.mean(img)
-
+    index[0] = index[0] + 1
+    return img
 
 def stripFrame(frame):
     return frame[33:411, 98:583]
@@ -184,10 +185,16 @@ def runVideo(video,funcToUse,*args, **kwargs):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    goodImg = stripFrame(cv2.imread('Images\\3-A_frame_39.png',0))
-    cv2.waitKey(0)
-    runVideo('Videos/3-A.mp4', global_histogram, goodImg)
+    mean = np.zeros(450)
+    index = [0]
+    runVideo('Videos/3-A.mp4', averages, mean, index)
 
+    plt.plot(mean)
+
+    plt.title('Average Intensity With Varying Gain of Class 3')
+    plt.xlabel('Frame #')
+    plt.ylabel('Average Intensity')
+    plt.show()
 
 
 

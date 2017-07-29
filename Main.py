@@ -58,7 +58,7 @@ empty = np.zeros((480, 640))
 outputTemplate = outputFrame(empty, frameSplitter, empty)
 cv2.imshow('Original vs. Corrected', outputTemplate)
 
-cap = cv2.VideoCapture(vids[10])  # Open specified video file
+cap = cv2.VideoCapture(vids[9])  # Open specified video file
 
 ret = True  # Initialize ret to be True, ret keeps track if there is 1+ frames left in vid
 

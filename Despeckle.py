@@ -28,22 +28,25 @@ def hist_first(original, goodImg,*args, **kwargs):
     
     img = ul.global_histogram(original,goodImg)
  
-    systolic = despeckle_thresh(img.astype(np.uint8), *args, **kwargs)
+    systolic = despeckle_thresh(original.astype(np.uint8), *args, **kwargs)
 
     return systolic
 
 def despeckle_thresh(img, countarray,diffarray,index, systracker):
-    homog = quickHomog(img)
+    dsimg, homog = quickHomog(img)
     homog2 = homog[80:200,200:400]
     #detection(homog)
-    #thresholding(dsimg,homog2)
+    thresholding(dsimg,homog2)
+    ret, threshUF = cv2.threshold(img,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+    cv2.imshow('Unfiltered', threshUF)
+
    
     #kernel = np.ones((3,3),np.uint8)
     #opening= cv2.morphologyEx(homog2,cv2.MORPH_OPEN,kernel, iterations = 1)
 
     edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
   
-    #cv2.imshow('edges', edges)
+    cv2.imshow('edges', edges)
 
     #cv2.imshow('dialtion', opening)
    
@@ -101,7 +104,7 @@ def thresholding(img,other):
     kernel = np.ones((3,3),np.uint8)
     opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 5)
     #closing = cv2.morphologyEx(thresh,cv2.MORPH_CLOSE,kernel, iterations = 5)
-    cv2.imshow('opening',opening)
+    #cv2.imshow('opening',opening)
     # sure background area
     #sure_bg = cv2.dilate(opening,kernel,iterations=3)
     # Finding sure foreground area
@@ -133,8 +136,8 @@ def quickHomog(img):
 
      dev = moment2-np.multiply(mean,mean)
 
-     #median = cv2.medianBlur(img,wSize)
-     #gaussian = cv2.GaussianBlur(img,(wSize,wSize),sigmaX=1)
+     median = cv2.medianBlur(img,wSize)
+     gaussian = cv2.GaussianBlur(img,(wSize,wSize),sigmaX=1)
     
      mean_mean = np.mean(mean) 
      mean_dev = np.mean(dev)
@@ -154,16 +157,16 @@ def quickHomog(img):
     
      hMat = np.logical_or(hMat,zeromean)
 
-     #gaussians = np.multiply(hMat,gaussian)
-     #medians = np.multiply(np.logical_not(hMat),median) 
+     gaussians = np.multiply(hMat,gaussian)
+     medians = np.multiply(np.logical_not(hMat),median) 
      
-     #newimg = gaussians+medians
+     newimg = gaussians+medians
 
 
-     #cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
+     cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
    
         
-     return hMat.astype(np.uint8)*255
+     return newimg, hMat.astype(np.uint8)*255
 
 
 
@@ -259,22 +262,26 @@ if __name__ == "__main__":
         systracker = np.zeros(2)
         ul.runVideo(video, hist_first, goodImg, counts,diffs,index, systracker)
 
-        plt.plot(counts)
+        line_c, = plt.plot(counts, label = 'Pixel Counts')
         mean = diffs
         dev = np.var(counts)**0.5
         hthresh = mean+dev/2
         lthresh = mean-dev/2
 
 
-        plt.plot(mean)
+        line_m, = plt.plot(mean, label = 'Systoles Threshold')
 
         systolic = np.less(counts,mean).astype(np.uint8)
         systolic = systolic*(counts.max()-counts.min()) + counts.min()
-        plt.plot(systolic)
+        #plt.plot(systolic)
         #plt.plot(hthresh)
         #plt.plot(lthresh)
         #plt.plot(diffs)
-        plt.title(video)
+        plt.title('White Pixel Counts with Prior Histogram Equalization')
+        plt.xlabel('Frame #')
+        plt.ylabel('Number of White Pixels')
+        plt.legend(handles = [line_c, line_m])
+        
         plt.show()
 
 
