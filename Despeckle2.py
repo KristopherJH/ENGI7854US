@@ -46,7 +46,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     edges = cv2.Canny(homog2, threshold1 = 50, threshold2 = 100)
   
-    cv2.imshow('edges', edges)
+    #cv2.imshow('edges', edges)
 
     #cv2.imshow('dialtion', opening)
    
@@ -78,7 +78,7 @@ def despeckle_thresh(img, countarray,diffarray,index, systracker):
 
     index[0] = index[0] + 1
 
-    cv2.imshow('systolic',image)
+   # cv2.imshow('systolic',image)
 
 
     #plt.cla()
@@ -97,7 +97,7 @@ def thresholding(img,other):
     
     ret, thresh = cv2.threshold(img,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
     #thresh = cv2.adaptiveThreshold(img, 1, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 55, -3)
-    cv2.imshow('threshold',thresh)
+    #cv2.imshow('threshold',thresh)
    
     thresh = other
     # noise removal
@@ -163,7 +163,7 @@ def quickHomog(img):
      newimg = gaussians+medians
 
 
-     cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
+     #cv2.imshow('homogeny',hMat.astype(np.uint8)*255)
    
         
      return newimg, hMat.astype(np.uint8)*255

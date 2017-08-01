@@ -9,7 +9,7 @@ from datetime import datetime
 vids = ['Videos/1-A.mp4', 'Videos/1-B.mp4', 'Videos/2-A.mp4', 'Videos/2-B.mp4',
         'Videos/3-A.mp4', 'Videos/3-B.mp4', 'Videos/4-A.mp4', 'Videos/4-B.mp4',
         'Videos/5-A.mp4', 'Videos/5-B.mp4', 'Videos/Varying.mp4']
-
+vidNum = 9
 
 def frame_delay(start):
     now = 0
@@ -58,7 +58,7 @@ empty = np.zeros((480, 640))
 outputTemplate = outputFrame(empty, frameSplitter, empty)
 cv2.imshow('Original vs. Corrected', outputTemplate)
 
-cap = cv2.VideoCapture(vids[9])  # Open specified video file
+cap = cv2.VideoCapture(vids[vidNum])  # Open specified video file
 
 ret = True  # Initialize ret to be True, ret keeps track if there is 1+ frames left in vid
 
@@ -102,7 +102,7 @@ while ret:
             fImproved = sframe
             regenFrame = np.copy(gframe)
             regenFrame[33:411, 98:583] = fImproved
-            delay = frame_delay(start_t)
+            delay = 35
 
         display = outputFrame(gframe, frameSplitter, regenFrame)
         cv2.imshow('Original vs. Corrected', display)
